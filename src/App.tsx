@@ -1,27 +1,212 @@
+
+import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { getCurrentUser } from "./utils/auth";
+import { initializeData } from "./config/data";
+import { ROUTES } from "./config/routes";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+
+// Auth pages
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
+
+// Customer pages
+import CustomerDashboard from "./pages/customer/CustomerDashboard";
+import PersonalInfo from "./pages/customer/PersonalInfo";
+import EventDetails from "./pages/customer/EventDetails";
+import FoodDetails from "./pages/customer/FoodDetails";
+
+// Admin pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManagerManagement from "./pages/admin/ManagerManagement";
+import WorkAssignment from "./pages/admin/WorkAssignment";
+
+// Manager pages
+import ManagerDashboard from "./pages/manager/ManagerDashboard";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  useEffect(() => {
+    initializeData();
+  }, []);
+
+  const user = getCurrentUser();
+  const isAuthenticated = !!user;
+
+  const Layout = ({ children }: { children: React.ReactNode }) => (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="flex w-full">
+        {isAuthenticated && <Sidebar />}
+        <main className={`flex-1 ${isAuthenticated ? 'p-6' : ''}`}>
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Layout>
+            <Routes>
+              {/* Public routes */}
+              <Route path={ROUTES.LOGIN} element={
+                isAuthenticated ? (
+                  <Navigate to={
+                    user.role === 'admin' ? ROUTES.ADMIN_DASHBOARD :
+                    user.role === 'manager' ? ROUTES.MANAGER_DASHBOARD :
+                    ROUTES.CUSTOMER_DASHBOARD
+                  } replace />
+                ) : <Login />
+              } />
+              <Route path={ROUTES.SIGNUP} element={
+                isAuthenticated ? (
+                  <Navigate to={
+                    user.role === 'admin' ? ROUTES.ADMIN_DASHBOARD :
+                    user.role === 'manager' ? ROUTES.MANAGER_DASHBOARD :
+                    ROUTES.CUSTOMER_DASHBOARD
+                  } replace />
+                ) : <Signup />
+              } />
+
+              {/* Customer routes */}
+              <Route path={ROUTES.CUSTOMER_DASHBOARD} element={
+                <ProtectedRoute requiredRole="customer">
+                  <CustomerDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.CUSTOMER_PERSONAL} element={
+                <ProtectedRoute requiredRole="customer">
+                  <PersonalInfo />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.CUSTOMER_EVENT} element={
+                <ProtectedRoute requiredRole="customer">
+                  <EventDetails />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.CUSTOMER_FOOD} element={
+                <ProtectedRoute requiredRole="customer">
+                  <FoodDetails />
+                </ProtectedRoute>
+              } />
+
+              {/* Admin routes */}
+              <Route path={ROUTES.ADMIN_DASHBOARD} element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_MANAGERS} element={
+                <ProtectedRoute requiredRole="admin">
+                  <ManagerManagement />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_ASSIGNMENTS} element={
+                <ProtectedRoute requiredRole="admin">
+                  <WorkAssignment />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_SHIFTS} element={
+                <ProtectedRoute requiredRole="admin">
+                  <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Shift Management</h1>
+                    <p className="text-gray-600">Coming soon...</p>
+                  </div>
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_STAFF} element={
+                <ProtectedRoute requiredRole="admin">
+                  <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Staff Management</h1>
+                    <p className="text-gray-600">Coming soon...</p>
+                  </div>
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.ADMIN_ANALYTICS} element={
+                <ProtectedRoute requiredRole="admin">
+                  <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Analytics Dashboard</h1>
+                    <p className="text-gray-600">Coming soon...</p>
+                  </div>
+                </ProtectedRoute>
+              } />
+
+              {/* Manager routes */}
+              <Route path={ROUTES.MANAGER_DASHBOARD} element={
+                <ProtectedRoute requiredRole="manager">
+                  <ManagerDashboard />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.MANAGER_SHIFTS} element={
+                <ProtectedRoute requiredRole="manager">
+                  <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">My Shifts</h1>
+                    <p className="text-gray-600">Coming soon...</p>
+                  </div>
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.MANAGER_PERSONAL} element={
+                <ProtectedRoute requiredRole="manager">
+                  <PersonalInfo />
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.MANAGER_DUTIES} element={
+                <ProtectedRoute requiredRole="manager">
+                  <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Duty Hours</h1>
+                    <p className="text-gray-600">Coming soon...</p>
+                  </div>
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.MANAGER_CUSTOMERS} element={
+                <ProtectedRoute requiredRole="manager">
+                  <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Customer Management</h1>
+                    <p className="text-gray-600">Coming soon...</p>
+                  </div>
+                </ProtectedRoute>
+              } />
+              <Route path={ROUTES.MANAGER_EVENTS} element={
+                <ProtectedRoute requiredRole="manager">
+                  <div className="text-center py-12">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Management</h1>
+                    <p className="text-gray-600">Coming soon...</p>
+                  </div>
+                </ProtectedRoute>
+              } />
+
+              {/* Root redirect */}
+              <Route path="/" element={
+                <Navigate to={
+                  isAuthenticated ? (
+                    user.role === 'admin' ? ROUTES.ADMIN_DASHBOARD :
+                    user.role === 'manager' ? ROUTES.MANAGER_DASHBOARD :
+                    ROUTES.CUSTOMER_DASHBOARD
+                  ) : ROUTES.LOGIN
+                } replace />
+              } />
+
+              {/* 404 catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
