@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -27,9 +26,16 @@ import FoodDetails from "./pages/customer/FoodDetails";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManagerManagement from "./pages/admin/ManagerManagement";
 import WorkAssignment from "./pages/admin/WorkAssignment";
+import ShiftManagement from "./pages/admin/ShiftManagement";
+import StaffManagement from "./pages/admin/StaffManagement";
+import Analytics from "./pages/admin/Analytics";
 
 // Manager pages
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
+import ManagerShifts from "./pages/manager/ManagerShifts";
+import DutyHours from "./pages/manager/DutyHours";
+import CustomerManagement from "./pages/manager/CustomerManagement";
+import EventManagement from "./pages/manager/EventManagement";
 
 const queryClient = new QueryClient();
 
@@ -121,26 +127,17 @@ const App = () => {
               } />
               <Route path={ROUTES.ADMIN_SHIFTS} element={
                 <ProtectedRoute requiredRole="admin">
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Shift Management</h1>
-                    <p className="text-gray-600">Coming soon...</p>
-                  </div>
+                  <ShiftManagement />
                 </ProtectedRoute>
               } />
               <Route path={ROUTES.ADMIN_STAFF} element={
                 <ProtectedRoute requiredRole="admin">
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Staff Management</h1>
-                    <p className="text-gray-600">Coming soon...</p>
-                  </div>
+                  <StaffManagement />
                 </ProtectedRoute>
               } />
               <Route path={ROUTES.ADMIN_ANALYTICS} element={
                 <ProtectedRoute requiredRole="admin">
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Analytics Dashboard</h1>
-                    <p className="text-gray-600">Coming soon...</p>
-                  </div>
+                  <Analytics />
                 </ProtectedRoute>
               } />
 
@@ -152,10 +149,7 @@ const App = () => {
               } />
               <Route path={ROUTES.MANAGER_SHIFTS} element={
                 <ProtectedRoute requiredRole="manager">
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">My Shifts</h1>
-                    <p className="text-gray-600">Coming soon...</p>
-                  </div>
+                  <ManagerShifts />
                 </ProtectedRoute>
               } />
               <Route path={ROUTES.MANAGER_PERSONAL} element={
@@ -165,26 +159,17 @@ const App = () => {
               } />
               <Route path={ROUTES.MANAGER_DUTIES} element={
                 <ProtectedRoute requiredRole="manager">
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Duty Hours</h1>
-                    <p className="text-gray-600">Coming soon...</p>
-                  </div>
+                  <DutyHours />
                 </ProtectedRoute>
               } />
               <Route path={ROUTES.MANAGER_CUSTOMERS} element={
                 <ProtectedRoute requiredRole="manager">
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Customer Management</h1>
-                    <p className="text-gray-600">Coming soon...</p>
-                  </div>
+                  <CustomerManagement />
                 </ProtectedRoute>
               } />
               <Route path={ROUTES.MANAGER_EVENTS} element={
                 <ProtectedRoute requiredRole="manager">
-                  <div className="text-center py-12">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Management</h1>
-                    <p className="text-gray-600">Coming soon...</p>
-                  </div>
+                  <EventManagement />
                 </ProtectedRoute>
               } />
 
