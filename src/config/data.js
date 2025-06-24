@@ -356,3 +356,10 @@ export const setData = (key, value) => {
   data[key] = value;
   localStorage.setItem('zeroWasteData', JSON.stringify(data));
 };
+
+export const initializeData = () => {
+  const existingData = localStorage.getItem('zeroWasteData');
+  if (!existingData) {
+    localStorage.setItem('zeroWasteData', JSON.stringify(initialData));
+  }
+};
